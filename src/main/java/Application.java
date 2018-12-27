@@ -1,3 +1,4 @@
+
 /**
  * @author ：ex-xugaoxiang001
  * @description ：
@@ -6,5 +7,9 @@
  */
 public class Application {
 
+    public static void main(String[] args) {
+        Class<Application> applicationClass = Application.class;
 
+
+    }
 }
