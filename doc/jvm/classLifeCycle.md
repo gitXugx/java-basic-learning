@@ -20,7 +20,7 @@ public class Application {
 > java通过类型装载、连接和初始化一个java类型，使该类型可以被正在运行的程序所使用。
 
 我们可以编译我们的代码会生成对应的class文件，这时我们删除
-![][doge]
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class.png)
 
 
 
