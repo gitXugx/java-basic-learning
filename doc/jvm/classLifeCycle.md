@@ -21,7 +21,7 @@ public class Application {
 
 我们可以编译我们的代码会生成对应的class文件，这时我们删除
 
-<img src="https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class.png" width = 50% height = 50%  align=right />
+<img src="https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class.png" width =50% height =50%  align=center />
 
 
 
