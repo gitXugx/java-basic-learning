@@ -1,4 +1,4 @@
-package java.basic.learning.jvm.classlife.example1;
+package basic.learning.jvm.classlife.example1;
 
 /**
  * @author ：apple
@@ -8,7 +8,10 @@ package java.basic.learning.jvm.classlife.example1;
  */
 public class Test {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+
+        Thread.sleep(10000L);
+
         User user = new User();
         user.setAge(1);
         user.setPassWord("1234");

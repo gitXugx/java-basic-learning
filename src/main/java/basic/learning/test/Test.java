@@ -1,4 +1,4 @@
-package java.basic.learning.java;
+package basic.learning.test;
 
 /**
  * @author ：apple

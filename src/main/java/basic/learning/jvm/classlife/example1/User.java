@@ -1,4 +1,4 @@
-package java.basic.learning.jvm.classlife.example1;
+package basic.learning.jvm.classlife.example1;
 
 /**
  * @author ：apple
