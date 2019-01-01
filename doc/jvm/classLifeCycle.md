@@ -141,6 +141,41 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 
 
 ### 1.3 初始化
+> 某个类首次主动被使用，最后一个步骤就是初始化，**为类变量赋予正确的值**
+**赋予正确的值到底是什么**
+1. 类变量的等号后面的表达式
+2. 静态代码块
+
+对于这两块，java编译器会把他们编译到一个<static>方法中(在深入java虚拟机第二版中说的是<clinit>,但是从我jdk8看到的是<static>)，由虚拟机执行
+```text
+public class basic.learning.jvm.classlife.example2.Test {
+  public basic.learning.jvm.classlife.example2.Test();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: getstatic     #3                  // Field size:I
+       6: invokevirtual #4                  // Method java/io/PrintStream.println:(I)V
+       9: return
+
+  static {};
+    Code:
+       0: invokestatic  #5                  // Method java/lang/Math.random:()D
+       3: d2i
+       4: iconst_5
+       5: imul
+       6: putstatic     #3                  // Field size:I
+       9: bipush        10
+      11: putstatic     #3                  // Field size:I
+      14: return
+}
+```
+
+
 
 **初始化**
 1. 子类初始化，他的父类必须在子类之前初始化
@@ -148,7 +183,7 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 3. 父接口的子类装载时，父接口也必须被装载
 
 
-延迟解析验证：
+**首次被使用时延迟解析验证：**
 1. 符号引用的元素必须存在
 2. 检查是否有访问该元素的权限
 
