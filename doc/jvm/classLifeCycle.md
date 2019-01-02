@@ -140,6 +140,8 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 4. 接口方法解析
 
 
+
+
 符号引用在被使用之前这步是可选的(可选的)
 
 
@@ -152,7 +154,7 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 1. 类变量的等号后面的表达式
 2. 静态代码块
 
-对于这两块，java编译器会把他们编译到一个<static>方法中(在深入java虚拟机第二版中说的是<clinit>,但是从我jdk8看到的是<static>)，由虚拟机执行
+对于这两块，java编译器会把他们编译到一个<static>方法中(在深入java虚拟机第二版中说的是<clinit>,但是从我jdk8看到的是<static>)，由虚拟机执行,static方法中静态变量是顺序至上而下的
 ```text
 public class basic.learning.jvm.classlife.example2.Test {
   public basic.learning.jvm.classlife.example2.Test();
@@ -180,8 +182,97 @@ public class basic.learning.jvm.classlife.example2.Test {
       14: return
 }
 ```
+静态变量在静态代码块之前是可以访问的之后是不能访问的，都能进行复制操作。
+```java
+public class Test {
+    static {
+        size = 10;
+//        System.out.println(size); //访问会编译出错
+    }
+    private static int size = (int)Math.random()*5 ;
 
 
+    public static void main(String[] args) {
+        System.out.println(size);
+    }
+}
+```
+至于为什么,我猜可能是因为静态字段编译后会放在静态代码块的后面，导致此时读取的并不是最终的值。
+
+**调用类的<static> 首先要初始化父类的<static>方法？**
+```java
+//父类
+public class Parent {
+    public static int A = 1;
+
+    static {
+        A = 2;
+    }
+}
+//子类
+public class Sub extends Parent{
+    public static int B = A;
+}
+//测试类
+public class Test {
+    public static void main(String[] args) {
+        System.out.println(Sub.B);
+    }
+}
+
+```
+执行结果: 
+```text
+2
+```
+其实我们可以把代码稍微修改下:
+```java
+public class Parent {
+    static {
+        public static int A = 1;
+        A = 2;
+    }
+}
+```
+首先执行父类的<static> ***A = 2*** 再去执行子类的<static>方法，把父类的 ***B = A***
+
+对于<static>方法执行的时候，在多线程环境下是加锁的,保证只有一个线程操作
+```java
+public class StaticTest {
+     int A = 2;
+     static{
+          System.out.println("执行static" + Thread.currentThread().getName());
+          try {
+               Thread.sleep(10000);
+          } catch (InterruptedException e) {
+               e.printStackTrace();
+          }
+     }
+}
+public class Test implements Runnable{
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+        StaticTest staticTest = new StaticTest();
+        System.out.println("初始化完成" + Thread.currentThread().getName());
+    }
+
+    public static void main(String[] args) {
+        Test test = new Test();
+        Thread thread = new Thread(test);
+        Thread thread2 = new Thread(test);
+        thread.start();
+        thread2.start();
+    }
+}
+```
+执行结果:
+```text
+Thread-0
+Thread-1
+执行staticThread-1
+初始化完成Thread-1
+初始化完成Thread-0
+```
 
 **初始化**
 1. 子类初始化，他的父类必须在子类之前初始化
