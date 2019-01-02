@@ -301,18 +301,46 @@ Thread-1
 3. 通过clone来创建一个相同的对象
 4. 通过序列化来实例化一个对象
 5. 隐藏创建的对象
-1和2实例化是需要调用构造方法的,3和4是不会调用构造方法的,具体怎么回事阅读[对象的创建]()
+1和2实例化是需要调用构造方法的,3和4是不会调用构造方法的,构造方法主要是初始化变量，而clone和序列化的本身可以拿到变量的值进行一个copy
 
+编译器为每个类都至少生成一个实例初始化方法<init>,为了初始化实例变量，子类的每个构造方法必须在第一步调用父类的构造方法
+```text
+public class basic.learning.jvm.classlife.example5.Sub extends basic.learning.jvm.classlife.example5.Parent {
+  public basic.learning.jvm.classlife.example5.Sub(int);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method basic/learning/jvm/classlife/example5/Parent."<init>":()V
+       4: return
 
+  public basic.learning.jvm.classlife.example5.Sub(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method basic/learning/jvm/classlife/example5/Parent."<init>":()V
+       4: return
+}
+```
+父类构造方法抛出的异常子类是不能捕捉的。
 
-#### 2.1.5 隐藏创建的对象
+** 隐藏创建的对象**
 > 没有明确通过反射，new，clone，objectInputStream.readObject()来创建的对象
 1. 前面说到的类加载的时候在第一步，加载的时候会创建一个该类型的Class对象
 2. 每个main方法都会有`String[] args`参数,命令传过来的也是隐藏的
-3. java8之前的
+
+
+### 2.2 对象的回收和终结
+对象被垃圾收集器回收前会调用`finalize`方法，该方法只会被垃圾收集器调用一次，垃圾收集器调用该方法时忽略任何异常抛出
+**该方法尽量不要使用**
 
 ## 3 类型卸载
-> 
+> 也是和对象的回收差不多，这个方法区中的类型如果不可触，则可以进行回收
+
+使用启动类装载器装载的类型永远不会被卸载，只有用户的装载器装载的类型才会变成不可触，如果一个类型的class对象不可以触及，那么类型也是不可触及的。
+**判断class实例是否可触及的两种方式**
+1. 程序保持对Class实例的明确引用，它就是可触及的
+2. 程序中有一个对象，它在方法区中的类型对应的Class实例就是可触及的,如果有父类那么他的父类也是可触及 
+
+
+
 
 
 
