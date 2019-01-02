@@ -50,7 +50,7 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
 	... 1 more
 ```
-说明我们在编译的时候要加载User.class文件
+说明我们在运行的时候要加载User.class文件
 
 **那类加载是什么时候加载呢?**
 下面我们打开`Thread.sleep(10000L)`注释掉的代码。
