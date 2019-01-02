@@ -134,6 +134,12 @@ Caused by: java.lang.ClassNotFoundException: basic.learning.jvm.classlife.exampl
 #### 1.2.3 解析
 > 在类型的常量池中寻找类，接口，字段，方法的符号引用，把这些符号引用替换成直接引用的过程
 
+1. 类或者接口的解析
+2. 字段解析
+3. 类方法解析
+4. 接口方法解析
+
+
 符号引用在被使用之前这步是可选的(可选的)
 
 
