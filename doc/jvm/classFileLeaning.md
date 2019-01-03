@@ -17,6 +17,7 @@
 > class比较紧凑没有分隔符，没有多余的字符，结构是严格规定
 
 **class文件的数据结构是无符号数和表来进行存储的**
+
 |字节|标识|
 |----|----|
 |u1|1个字节无符号|
@@ -27,9 +28,10 @@
 **class文件格式**
 表是以_info结尾的
 
-![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class2.jpg)
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class2.JPG)
 
 Class文件简介:
+
 1. 魔数
 是class文件前4个字节固定的字符
 2. minor_version和major_version
@@ -38,7 +40,7 @@ JDK次版本号和主版本号
 constant_pool里面包含很多个常量池的入口找到对应的池子入口后，就可以找到对应一类的常量值constant_pool_count是常量池有多少个，但是会比常量池多一个因为常量池是从1开始的。
 
 常量池的标志位如下图:
-![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class4.jpg)
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class4.JPG)
 
 每个标志位对应某一类型的常量池，通过标志位解析找到对应常量池，常量池的名称是入口类型后面加上_info代表对应的表
 
@@ -53,7 +55,7 @@ constant_pool里面包含很多个常量池的入口找到对应的池子入口�
 
 4. access_flags
 该2字节表示类或者接口的描述,主要有一下标识:
-![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class6.jpg)
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class6.JPG)
 例如如果是接口或者抽象类就不能有final字段,修饰只有public或者默认权限，未使用的位置为0
 
 下面是使用`javap -verbose`查看字节码输出的东西
@@ -64,9 +66,9 @@ public class basic.learning.jvm.classlife.example6.Test implements java.lang.Clo
   flags: ACC_PUBLIC, ACC_SUPER
 ```
 5. this_class、super_class、interface_count、interfaces
-这4个除了interface_count外，其他的都是对常量池的索引.this_class是类的全限定名，super_class是父类的全限定名,interfaces是一组接口的全限定名
-interface_count是该类implement多少接口,
-this_class保存有我们之前讲的常量池的索引,他会先去CONSTANT_class_info中查找，然后再到CONSTANT_Utf8_info查找对应的全限定名
+- 这4个除了interface_count外，其他的都是对常量池的索引.this_class是类的全限定名，super_class是父类的全限定名,interfaces是一组接口的全限定名
+- interface_count是该类implement多少接口
+- this_class保存有我们之前讲的常量池的索引,他会先去CONSTANT_class_info中查找，然后再到CONSTANT_Utf8_info查找对应的全限定名
 其他类类似，他们合起来秒速了类的继承和实现的关系
 
 ```text
@@ -87,15 +89,18 @@ fields是该类(不包括父类和实现的接口的变量)实例变量和类变
 field_info是该字段的描述如果是final修饰的还会有常量值，其他的则是放在常量池中的
 
 7. methods和method_count
-method_count是该类实例方法和类方法的总和
-methods是类方法的列表
-method_info包含了方法一些相关的信息。如果不是抽象，或者本地方法的情况下，那么method_info中就会有局部变量所需的栈空间长度,方法捕获的异常表,局部变量表，以验证的异常表
+- method_count是该类实例方法和类方法的总和
+
+- methods是类方法的列表
+
+- method_info包含了方法一些相关的信息。如果不是抽象，或者本地方法的情况下，那么method_info中就会有局部变量所需的栈空间长度,方法捕获的异常表,局部变量表，以验证的异常表
 
 8. attributes_count和attributes
-attributes_count属性表有多少个
-attributes属性表的集合
-attribute_info 它再class文件和方法表和字段表中都有自己的属性表
-![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class8.jpg)
+- attributes_count属性表有多少个
+- attributes属性表的集合
+- attribute_info 它再class文件和方法表和字段表中都有自己的属性表
+
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class8.JPG)
 
 
 
