@@ -339,6 +339,12 @@ public class basic.learning.jvm.classlife.example5.Sub extends basic.learning.jv
 1. 程序保持对Class实例的明确引用，它就是可触及的
 2. 程序中有一个对象，它在方法区中的类型对应的Class实例就是可触及的,如果有父类那么他的父类也是可触及 
 
+![](https://github.com/gitXugx/java-basic-learning/blob/master/doc/images/class1.jpg)
+
+1. test对象是可触及的，那么Test类型是可触及的，Test类型的Class对象是可触及的
+2. Cloneable是可触及的，Object是可触及的
+3. 他们的Class对象都是可触及的
+
 
 
 
