@@ -14,7 +14,7 @@ java编译器会在编译实例方法的时候会把this作为第一个参数传
 > 当然对应的还有编译期可知, 运行期不可变。这两种都时对方法的编译时的描述, 对于静态方法和私有方法, 他们在编译的时候就已经确认调用时是哪个方法, 对于重载和重写的方法他们属于运行时确定。也就是拥有多态的会有运行时确定
 
 **编译期不可知, 运行期可知** 
-
+- 具有多态性的方法, 重载
 
 **编译期可知, 运行期不可变**
 - 静态方法
@@ -29,9 +29,46 @@ java编译器会在编译实例方法的时候会把this作为第一个参数传
 - 静态重载实现
 在编译期间, 根据静态类型来决定而不是实际类型来确定调用的方法, 重载的静态方法也能在编译时就确定调用的方法(或者选择最佳的)。这个其实叫 `静态分派`   
 
+```text
+public class basic.learning.jvm.basicimp.example2.OverLoadTest {
+  public static void main(java.lang.String[]);
+    Code:
+      .....
+      33: new           #11                 // class basic/learning/jvm/basicimp/example2/OverLoadTest$Man
+      36: dup
+      37: invokespecial #12                 // Method basic/learning/jvm/basicimp/example2/OverLoadTest$Man."<init>":()V
+      40: astore        5
+      42: aload_1
+      43: invokestatic  #13                 // Method print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Person;)V
+      46: aload_2
+      47: invokestatic  #14                 // Method print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Woman;)V
+      50: aload_3
+      51: invokestatic  #15                 // Method print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Man;)V
+      54: aload         4
+      56: invokestatic  #13                 // Method print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Person;)V
+      59: aload         5
+      61: invokestatic  #13                 // Method print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Person;)V
+      64: return
+}
 
-
-
+```
+1. 0-40 都是创建对象初始化, 存放到局部变量表
+2. 42-61 都是重复调用把局部变量加载到操作数栈, 使用 `invokestatic` 指令调用方法指向常量池 `#13`
+3. 从下面编译的字节码我们就可以看出 `#13 #14 #15` 已经确定了方法是调用哪个了
+```text
+Constant pool:
+  #13 = Methodref          #16.#58        // basic/learning/jvm/basicimp/example2/OverLoadTest.print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Person;)V
+  #14 = Methodref          #16.#59        // basic/learning/jvm/basicimp/example2/OverLoadTest.print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Woman;)V
+  #15 = Methodref          #16.#60        // basic/learning/jvm/basicimp/example2/OverLoadTest.print:(Lbasic/learning/jvm/basicimp/example2/OverLoadTest$Man;)V
+```
+我们最后的执行结果, 与我们字节码编译的预期一致
+```text
+print person  #13
+print woman   #14
+print Man     #15
+print person  #13
+print person  #13
+```
 
 ### 重写的实现
 > 子类覆盖父类的方法, 来实现多态
@@ -89,10 +126,28 @@ public class basic.learning.jvm.basicimp.example1.OverRewriteTest {
 }
 ```
 1. 1 - 15是创建对象, 并把变量方法局部变量表的1, 2两个槽
-2. 16 - 17是加载第一变量到操作数栈, 通过 `invokevirtual` 命令来调用方法
-3. 20 - 21是加载第二变量到操作数栈, 通过 `invokevirtual` 命令来调用方法
+2. 16 - 17是加载第一变量到操作数栈, 通过 `invokevirtual` 命令来调用方法, 但是指向的是常量池 `#6`
+3. 20 - 21是加载第二变量到操作数栈, 通过 `invokevirtual` 命令来调用方法, 和上面一样也是 `#6`
+
+```text
+Constant pool:
+   #6 = Methodref          #12.#33        // basic/learning/jvm/basicimp/example1/OverRewriteTest$Person.say:()V
+```
 
 现在看来最主要的就是 `invokevirtual` 命令了, 它主要做了什么:
+1. 根据 `Person` 静态类型找到实际类型 `Woman` 或者 `Man` 
+2. 根据**方法描述**在方法表中查找符合的方法, 如果找到则返回直接引用, 否则抛异常(一般情况下会父类的方法也会在子类的方法表中)
+***(根据方法表的设计有所不同, 这种设计性能比较差, 一般是上面的冗余做法)如果有父类接着根据父类继承关系从下往上查找方法表, 如果有则返回直接引用***
+
+这种在运行期根据实际类型来调用方法称为 `动态分派`
+
+### 单分派和多分派
+- 宗量: 方法的接收者与方法的参数统称为方法的宗量。
+- 静态分派: 依赖静态类型来定位方法执行版本的分派动作称为静态分派
+- 动态分派: 依赖动态类型来定位方法执行版本的分派动作称为动态分派
+- 多分派: 编译器需要根据方法的变量的静态类型和参数才能确定方法的描述符。
+- 单分派: 方法的名称和描述已确定, 根据实际类型去决定执行的方法版本。
+
 
 
 
