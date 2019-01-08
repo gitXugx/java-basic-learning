@@ -24,7 +24,7 @@ java编译器会在编译实例方法的时候会把this作为第一个参数传
 
 
 ### 重载的实现
-> 方法名相同, 参数不同(参数个数, 参数类型), 或者返回值不同
+> 方法名相同, 参数不同(参数个数, 参数类型)。重载是方法特征签名, 特征签名包括代码层面和字节码层面, 代码层面只包括 (参数顺序, 参数类型, 方法名), 字节码层面包括 (参数顺序, 参数类型, 方法名, 返回值, 受检查异常表)
 
 - 静态重载实现
 在编译期间, 根据静态类型来决定而不是实际类型来确定调用的方法, 重载的静态方法也能在编译时就确定调用的方法(或者选择最佳的)。这个其实叫 `静态分派`   
@@ -138,6 +138,7 @@ Constant pool:
 1. 根据 `Person` 静态类型找到实际类型 `Woman` 或者 `Man` 
 2. 根据**方法描述**在方法表中查找符合的方法, 如果找到则返回直接引用, 否则抛异常(一般情况下会父类的方法也会在子类的方法表中)
 ***(根据方法表的设计有所不同, 这种设计性能比较差, 一般是上面的冗余做法)如果有父类接着根据父类继承关系从下往上查找方法表, 如果有则返回直接引用***
+[分派的优化]()
 
 这种在运行期根据实际类型来调用方法称为 `动态分派`
 
@@ -147,6 +148,89 @@ Constant pool:
 - 动态分派: 依赖动态类型来定位方法执行版本的分派动作称为动态分派
 - 多分派: 编译器需要根据方法的变量的静态类型和参数才能确定方法的描述符。
 - 单分派: 方法的名称和描述已确定, 根据实际类型去决定执行的方法版本。
+
+
+## 自动拆箱, 装箱的问题
+
+```java
+public class AutoTest {
+    public  static void main(String[] args){
+        Integer a = 1;
+        Integer b = 2;
+        Integer c = 3;
+        Integer d = 3;
+        Integer e = 321;
+        Integer f = 321;
+        Long g = 3L;
+
+        System.out.println(c == d);//true
+        System.out.println(e == f);//false
+        System.out.println(c == (a+b));//true
+        System.out.println(c .equals(a+b));//true
+        System.out.println(g == (a+b));//true
+        System.out.println(g .equals (a+b));//false
+    }
+}
+```
+
+这是java虚拟机第二版上面的, 上面注释后面是运行结果, 注意 `g == (a+b)` 他在编译成下面的字节码:
+```text
+       132: aload         7
+       134: invokevirtual #10                 // Method java/lang/Long.longValue:()J
+       137: aload_1
+       138: invokevirtual #8                  // Method java/lang/Integer.intValue:()I
+       141: aload_2
+       142: invokevirtual #8                  // Method java/lang/Integer.intValue:()I
+       145: iadd                              //1+2
+       146: i2l                               //把int类型转换成long类型
+       147: lcmp                              //做一个long类型的比较
+       148: ifne          155
+       151: iconst_1
+       152: goto          156
+       155: iconst_0
+```
+
+## (从字节码看)可变参数
+
+```java
+public class ChangeableParameterTest {
+    public  static void main(String[] args){
+        ChangeableParameter(1111,2222,333);
+    }
+
+    public static void ChangeableParameter(int... args ){
+
+    }
+}
+```
+主要看字节码 `ChangeableParameter`这个方法:
+
+```text
+public static void ChangeableParameter(int...);
+    descriptor: ([I)V
+    flags: ACC_PUBLIC, ACC_STATIC, ACC_VARARGS
+    Code:
+      stack=0, locals=1, args_size=1
+         0: return
+      LineNumberTable:
+        line 17: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       1     0  args   [I         //看这个参数, 是一个数组
+```
+
+可以看出可变参数其实就是一个数组类型的参数。
+
+
+
+
+
+
+
+
+
+
+
 
 
 
