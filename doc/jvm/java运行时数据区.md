@@ -85,11 +85,6 @@
 不需要句柄, 对象的访问速度比较快。
 <div align="center"> <img src="../images/对象访问直接访问.jpg" /> </div><br>
 
-
-
-
-
-
 ## 简单的程序
 
 我们创建了一个 `User` 类型的类, 类变量 `userName` 和成员变量 `age` , `Test` 是一个简单算年龄赋值给 `user`
