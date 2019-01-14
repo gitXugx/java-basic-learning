@@ -17,9 +17,4 @@ public  class RootSerchTest {
         b.instance = a;
     }
 
-
-    public void setObject(Object object){
-
-    }
-
 }
