@@ -222,6 +222,60 @@ public static void ChangeableParameter(int...);
 可以看出可变参数其实就是一个数组类型的参数。
 
 
+## for和foreach的效率问题
+
+```java
+public class ForTest {
+    public  static void main(String[] args){
+        Integer[] ints = new Integer[]{1 ,1 ,3,4 ,5};
+
+        for(int i = 0 ; i < ints.length ;i ++ ){
+            Integer anInt = ints[i];
+        }
+        for(Integer  s: ints){
+
+        }
+    }
+}
+```
+
+我们查看他们编译的字节码来看看到底执行了什么命令:
+
+1. 上面的for 循环的循环体是 `42 - 55` 
+```text
+        42: iload_2             //把局部变量表中的第2个变量加载到操作数栈
+        43: aload_1             //把局部变量表中的第1个变量数组加载到操作数栈
+        44: arraylength         //获取数组长度
+        45: if_icmpge     58    //比较 0 调到58
+        48: aload_1             //把数组加载到操作数栈
+        49: iload_2             //局部变量表中的第2个变量加载到操作数栈
+        50: aaload              //把数组对应索引的值加载到操作数栈
+        51: astore_3            //把操作数栈中的值放到局部变量的第3个变量
+        52: iinc          2, 1  //把局部变量的第2个变量 自增
+        55: goto          42
+```
+
+2.  foreach是 `66 - 81`
+```text
+        58: aload_1             //把局部变量表中的第1个变量,数组加载到操作数栈
+        59: astore_2            //把操作数栈的结果保存到局部变量表的第2个位置
+        60: aload_2             //把局部变量表中的第2个变量,数组加载到操作数栈
+        61: arraylength         //得到数组长度
+        62: istore_3            //放到局部变量表3
+        63: iconst_0            //把int 0 推送至栈顶
+        64: istore        4     //把0 存放到局部变量表的第4个sot
+        66: iload         4     //把局部变量表的第4个变量推送至栈顶 0 
+        68: iload_3             //把局部变量表的第3个变量推送至栈顶  数组长度
+        69: if_icmpge     84    //比较 如果为 0 则 跳转到84
+        72: aload_2             //把局部变量表中的第2个参数,数组加载到操作数栈
+        73: iload         4     //把局部变量表的第4个变量推送至栈顶 
+        75: aaload              //把数组对应索引的值加载到操作数栈
+        76: astore        5     //把操作数栈中的值保存到局部变量表5
+        78: iinc          4, 1  //把局部变量表的第4个+1
+        81: goto          66    //返回到66
+```
+3. 可以看到其实 for里多个个 `arraylength` 指令在循环体中, 只要把 `ints.length` 作为一个变量就可以达到字节码一致, 所以基本上以上代码 `for` 和 `foreach` 提出 `int length = ints.length` 的情况下, 效率一样。 **当你为包装类型时还需要拆箱, 那样可能就多了很多操作**
+
 
 
 
