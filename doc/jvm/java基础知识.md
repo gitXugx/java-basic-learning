@@ -29,6 +29,46 @@ java编译器会在编译实例方法的时候会把this作为第一个参数传
 - 静态重载实现
 在编译期间, 根据静态类型来决定而不是实际类型来确定调用的方法, 重载的静态方法也能在编译时就确定调用的方法(或者选择最佳的)。这个其实叫 `静态分派`   
 
+```java
+public class OverLoadTest {
+    static  class Person{
+    }
+    static class Man extends Person{
+    }
+
+    static class Woman extends Person{
+    }
+
+
+    private static void print(Person person){
+        System.out.println("print person ");
+    }
+
+    private static void print(Man man){
+        System.out.println("print Man ");
+    }
+    private static void print(Woman woman){
+        System.out.println("print woman ");
+    }
+
+    public  static void main(String[] args){
+        Person person = new Person();
+        Woman woman = new Woman();
+        Man man = new Man();
+
+        Person personWoamn = new Woman();
+        Person personMan = new Man();
+
+        print(person);
+        print(woman);
+        print(man);
+        print(personWoamn);
+        print(personMan);
+    }
+
+}
+```
+
 ```text
 public class basic.learning.jvm.basicimp.example2.OverLoadTest {
   public static void main(java.lang.String[]);
